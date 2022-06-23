@@ -1,15 +1,20 @@
 const API_URL = "https://62b21703c7e53744afc76e45.mockapi.io/info";
 const tableBody = document.querySelector("#infoTable tbody");
+const pagination = document.querySelector('.pagination');
+const pageCount = 10;
+let currPage = 1;
 document.addEventListener("DOMContentLoaded", () => {
   readUsers();
 });
 
 function readUsers() {
-  fetch(`${API_URL}/info`)
+    tableBody.innerHTML = '';
+  fetch(`${API_URL}/info${generateQueryParams(currPage)}`)
     .then((response) => response.json())
     .then((user) => {
       const { items, count } = user;
       items.forEach(addToDom);
+      createPagination(count)
     });
 }
 
@@ -49,3 +54,28 @@ function addToDom(items) {
   tableBody.innerHTML += html;
   console.log(tableBody);
 }
+
+function createPagination(count){
+    const pageNum = Math.ceil(count/pageCount);
+    let str = '';
+    for (let i = 1; i <= pageNum; i++) {
+        str += `<li class="page-item ${i === currPage ? 'active' : ''}"><a class="page-link" href="#">${i}</a></li>`;
+    }
+    pagination.innerHTML = str;
+}
+
+
+function generateQueryParams(page=1) {
+    let queryParams = `?page=${page}&limit=${pageCount}`;
+    return queryParams;
+ }
+
+document.querySelector('.pagination').addEventListener('click', (e)=> {
+    let lis = document.querySelectorAll('.pagination li');
+    lis.forEach((li)=>{
+        li.classList.remove('active');
+    })
+    e.target.parentElement.classList.add('active');
+    currPage = +e.target.innerHTML;
+    readUsers();
+})
