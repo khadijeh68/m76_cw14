@@ -19,11 +19,11 @@ function readUsers() {
 }
 
 function addToDom(items) {
-  console.log(items);
+  
   let html = `
   <tr>
                             <td>${items.id}</td>
-                            <td>${items.Name}/td>
+                            <td>${items.Name}</td>
                             <td>${items.family}</td>
                             <td>${items.birthday}</td>
                             <td>${items.nationalID}</td>
@@ -78,4 +78,23 @@ document.querySelector('.pagination').addEventListener('click', (e)=> {
     e.target.parentElement.classList.add('active');
     currPage = +e.target.innerHTML;
     readUsers();
+})
+
+function searchUser(info){
+  return fetch(`${API_URL}/info?search=${info}`)
+  .then(response => response.json())
+  .then(data => {
+    tableBody.innerHTML = "";
+    data.items.forEach(addToDom);
+
+    console.log(data);
+    
+  }
+  );
+}
+
+var debounced = _.debounce(searchUser, 1000);
+document.querySelector('#searchBox').addEventListener('input', (e) =>
+{
+  debounced(e.target.value);
 })
