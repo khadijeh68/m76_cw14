@@ -19,6 +19,12 @@ const gender = document.getElementById("gender");
 const state = document.getElementById("state");
 const street = document.getElementById("street");
 
+// document.addEventListener('contextmenu', event => event.preventDefault());
+// const disableselect = (e) => {
+//     return false
+//     }
+//     document.onselectstart = disableselect
+//     document.onmousedown = disableselect
 
 
 
@@ -83,7 +89,20 @@ if (params.id) {
             }
         }).then(res => res.json()).then(() => {
             window.location.href = `/index.html`;
+
         })
+        .catch(err => {
+            // console.log(err);
+
+            Toastify({
+
+                text: `user error`,
+        
+                duration: 3000
+        
+              }).showToast();
+        });
+
     }
     console.log(submitForm)
     submitForm.addEventListener("submit", (e) => {
@@ -92,6 +111,7 @@ if (params.id) {
         let data = Object.fromEntries(formData);
         console.log(data);
         addInfo(data);
+
     })
 }
 
