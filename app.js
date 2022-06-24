@@ -1,4 +1,6 @@
 const API_URL = "https://62b21703c7e53744afc76e45.mockapi.io/info";
+const urlSearchParams = new URLSearchParams(window.location.search);
+const params = Object.fromEntries(urlSearchParams.entries());
 const tableBody = document.querySelector("#infoTable tbody");
 const pagination = document.querySelector(".pagination");
 const pageCount = 10;
@@ -22,7 +24,13 @@ const unit = document.getElementById("userUnit");
 const dlt = document.getElementById("deleteItem");
 const addBtn = document.getElementById("submit");
 document.addEventListener("DOMContentLoaded", () => {
-  readUsers();
+  if (params.page) {
+    openCurrentURLpage(params.page);
+    currPage = +params.page
+  } else {
+    readUsers();
+  }
+
 });
 
 function readUsers() {
@@ -35,6 +43,18 @@ function readUsers() {
       createPagination(count);
     });
 }
+
+function openCurrentURLpage(page) {
+  tableBody.innerHTML = "";
+  fetch(`${API_URL}/info${generateQueryParams(page)}`)
+    .then((response) => response.json())
+    .then((user) => {
+      const { items, count } = user;
+      items.forEach(addToDom);
+      createPagination(count);
+    });
+}
+
 
 function addToDom(items) {
   let html = `
@@ -77,9 +97,8 @@ function createPagination(count) {
   const pageNum = Math.ceil(count / pageCount);
   let str = "";
   for (let i = 1; i <= pageNum; i++) {
-    str += `<li class="page-item ${
-      i === currPage ? "active" : ""
-    }"><a class="page-link" href="#">${i}</a></li>`;
+    str += `<li class="page-item ${i === currPage ? "active" : ""
+      }"><a class="page-link" href="#">${i}</a></li>`;
   }
   pagination.innerHTML = str;
 }
@@ -139,33 +158,33 @@ function modalInfo(id) {
       unit.innerText = data.unit;
     });
 }
-  
 
-dlt.addEventListener('click', (e)=>{
+
+dlt.addEventListener('click', (e) => {
   const id = + name.dataset.value
-  fetch(`${API_URL}/info/${id}`,{
-    method:"DELETE"
+  fetch(`${API_URL}/info/${id}`, {
+    method: "DELETE"
   })
-  .then((response) => response.json())
-  .then(()=>{
-    Toastify({
+    .then((response) => response.json())
+    .then(() => {
+      Toastify({
 
-      text: `user ${id} deleted`,
-      
-      duration: 3000
-      
+        text: `user ${id} deleted`,
+
+        duration: 3000
+
       }).showToast();
-    readUsers();
-  })
-  
+      readUsers();
+    })
+
 })
 
 
-addBtn.addEventListener("click", (e)=>{
-  window.location.href="/form.html";
-  
+addBtn.addEventListener("click", (e) => {
+  window.location.href = "/form.html";
+
 })
 
-function editInfo(id){
-  window.location.href =`/form.html?id=${id}`;
+function editInfo(id) {
+  window.location.href = `/form.html?id=${id}&page=${currPage}`;
 }
