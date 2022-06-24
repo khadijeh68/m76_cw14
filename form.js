@@ -71,6 +71,28 @@ if (params.id) {
     })
 
 
+
 } else {
     addInfoBtn.textContent = "Add";
+        function addInfo(data) {
+        fetch(`${API_URL}/info`, {
+            method: "POST",
+            body: JSON.stringify(data),
+            headers: {
+                'Content-type': 'application/json'
+            }
+        }).then(res => res.json()).then(() => {
+            window.location.href = `/index.html`;
+        })
+    }
+    console.log(submitForm)
+    submitForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        let formData = new FormData(submitForm);
+        let data = Object.fromEntries(formData);
+        console.log(data);
+        addInfo(data);
+    })
 }
+
+
