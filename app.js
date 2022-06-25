@@ -23,6 +23,7 @@ const No = document.getElementById("userNo");
 const unit = document.getElementById("userUnit");
 const dlt = document.getElementById("deleteItem");
 const addBtn = document.getElementById("submit");
+const loading = document.querySelector("#loading");
 document.addEventListener("DOMContentLoaded", () => {
   if (params.page) {
     openCurrentURLpage(params.page);
@@ -35,13 +36,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function readUsers() {
   tableBody.innerHTML = "";
+  loading.style.display = "block";
   fetch(`${API_URL}/info${generateQueryParams(currPage)}`)
     .then((response) => response.json())
     .then((user) => {
+        loading.style.display = "none";
       const { items, count } = user;
       items.forEach(addToDom);
       createPagination(count);
     });
+
 }
 
 function openCurrentURLpage(page) {
